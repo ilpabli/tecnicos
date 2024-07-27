@@ -1,0 +1,34 @@
+{
+  "cli": {
+    "version": ">= 3.13.3"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://ascfs-production.up.railway.app/api/",
+        "EXPO_PUBLIC_WEBSOCKET_URL": "https://ascfs-production.up.railway.app/",
+        "EXPO_PUBLIC_WEBSOCKET_ORIGIN": "https://mobile"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://ascfs-production.up.railway.app/api/",
+        "EXPO_PUBLIC_WEBSOCKET_URL": "https://ascfs-production.up.railway.app/",
+        "EXPO_PUBLIC_WEBSOCKET_ORIGIN": "https://mobile"
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://ascfs-production.up.railway.app/api/",
+        "EXPO_PUBLIC_WEBSOCKET_URL": "https://ascfs-production.up.railway.app/",
+        "EXPO_PUBLIC_WEBSOCKET_ORIGIN": "https://mobile"
+      }
+    }
+  }
+}
