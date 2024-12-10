@@ -10,9 +10,11 @@ import {
   Checkbox,
   TextInput,
   IconButton,
+  HelperText,
 } from "react-native-paper";
 import { workingTicket } from "@/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm, Controller } from "react-hook-form";
 
 const LeftContent = ({ icon }: { icon: string }) => (
   <Avatar.Icon size={45} style={styles.color} icon={icon} />
@@ -22,9 +24,19 @@ const TicketComponent = ({ ticket }: any) => {
   const router = useRouter();
   const { ticketId } = useLocalSearchParams();
   const [checked, setChecked] = React.useState(false);
-  const [solution, setSolution] = React.useState("");
   const [state, setState] = React.useState("En servicio");
   const queryClient = useQueryClient();
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      solution: "",
+      ec: "",
+    },
+  });
 
   const getIconName = (ele_esc: any) => {
     if (ele_esc === "Ascensor") {
@@ -59,6 +71,16 @@ const TicketComponent = ({ ticket }: any) => {
     workingTicketMutation.mutate({ ticketId, updateData });
   };
 
+  const onSubmit = (data: any) => {
+    handleWorkingTicket(ticket?.ticket_id, {
+      ticket_closedAt: "true",
+      ticket_status: "Cerrado",
+      status_ele_esc: state,
+      solution: data.solution,
+      ec: data.ec,
+    });
+  };
+
   const openGoogleMapsWithAddress = (address: any) => {
     const encodedAddress = encodeURIComponent(address);
     const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
@@ -76,7 +98,7 @@ const TicketComponent = ({ ticket }: any) => {
       />
       <Card.Content style={styles.cardContent}>
         <Text variant="titleMedium" style={styles.text}>
-          Reclamo número: {ticket?.ticket_id}
+          Reclamo Número: {ticket?.ticket_id}
         </Text>
         <Text variant="titleLarge" style={styles.text}>
           {ticket?.ele_esc} #{ticket?.number_ele_esc} - {ticket?.status_ele_esc}
@@ -84,14 +106,16 @@ const TicketComponent = ({ ticket }: any) => {
         <Text variant="bodyLarge" style={styles.text}>
           Descripción: {ticket?.description}
         </Text>
-        <IconButton
-          icon="google-maps"
-          iconColor="blue"
-          size={30}
-          onPress={() =>
-            openGoogleMapsWithAddress(ticket?.job_data.job_address)
-          }
-        />
+        {ticket?.ticket_status === "Abierto" && (
+          <IconButton
+            icon="google-maps"
+            iconColor="blue"
+            size={30}
+            onPress={() =>
+              openGoogleMapsWithAddress(ticket?.job_data.job_address)
+            }
+          />
+        )}
       </Card.Content>
       <Card.Actions style={styles.cardActions}>
         {ticket?.ticket_workingAt === "" && (
@@ -116,15 +140,76 @@ const TicketComponent = ({ ticket }: any) => {
         )}
         {ticket?.solution === "" && ticket?.ticket_workingAt !== "" && (
           <View style={styles.actionContainer}>
-            <TextInput
-              label="Descripción del reclamo"
-              multiline={true}
-              numberOfLines={3}
-              value={solution}
-              cursorColor="black"
-              activeUnderlineColor="green"
-              onChangeText={(solution) => setSolution(solution)}
-              style={styles.textInput}
+            <Controller
+              control={control}
+              rules={{
+                required: "Es necesario cargar E/C.",
+                minLength: {
+                  value: 2,
+                  message: "Al menos un código debes cargar.",
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    label="E/C"
+                    multiline={false}
+                    error={!!errors.ec}
+                    numberOfLines={1}
+                    value={value}
+                    cursorColor="black"
+                    activeUnderlineColor="purple"
+                    onChangeText={onChange}
+                    style={styles.textInput}
+                  />
+                  {errors.ec && (
+                    <HelperText
+                      type="error"
+                      visible={!!errors.ec}
+                      style={styles.helperText}
+                    >
+                      Error: {errors.ec?.message}
+                    </HelperText>
+                  )}
+                </View>
+              )}
+              name="ec"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                required: "Es necesario ingresar una solución.",
+                minLength: {
+                  value: 20,
+                  message: "La solución debe tener al menos 20 caracteres.",
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    label="Solución..."
+                    multiline={true}
+                    error={!!errors.solution}
+                    numberOfLines={4}
+                    value={value}
+                    cursorColor="black"
+                    activeUnderlineColor="green"
+                    onChangeText={onChange}
+                    style={styles.textInput}
+                  />
+                  {errors.solution && (
+                    <HelperText
+                      type="error"
+                      visible={!!errors.solution}
+                      style={styles.helperText}
+                    >
+                      Error: {errors.solution?.message}
+                    </HelperText>
+                  )}
+                </View>
+              )}
+              name="solution"
             />
             <View style={styles.checkboxContainer}>
               <Checkbox
@@ -140,14 +225,7 @@ const TicketComponent = ({ ticket }: any) => {
               buttonColor="green"
               mode="contained"
               disabled={workingTicketMutation.isPending}
-              onPress={() =>
-                handleWorkingTicket(ticket?.ticket_id, {
-                  ticket_closedAt: "true",
-                  ticket_status: "Cerrado",
-                  solution: solution,
-                  status_ele_esc: state,
-                })
-              }
+              onPress={handleSubmit(onSubmit)}
             >
               {workingTicketMutation.isPending
                 ? "Procesando..."
@@ -200,7 +278,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: "100%",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -216,6 +294,12 @@ const styles = StyleSheet.create({
   },
   color: {
     backgroundColor: "#d60000",
+  },
+  inputContainer: {
+    width: "100%",
+  },
+  helperText: {
+    marginLeft: 0,
   },
 });
 

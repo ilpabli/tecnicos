@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
@@ -31,6 +31,7 @@ export const SocketNotificationProvider = ({ children }: any) => {
   );
   const { session } = useSession();
   const { updateLocationNow } = useLocation();
+  const previousTicketCountRef = useRef(0);
 
   const { data: ticketsAssign } = useQuery({
     queryKey: ["ticketsAssign"],
@@ -72,6 +73,16 @@ export const SocketNotificationProvider = ({ children }: any) => {
     socket.on("locationUpdate", () => {
       updateLocationNow();
     });
+    socket.on("notificationAlert", (data) => {
+      alertNotification(data);
+    });
+    socket.on("priorityAlert", (data) => {
+      const alert = {
+        title: `${data?.priority} - ${data?.job_data.job_name}`,
+        body: `${data?.ele_esc} #${data?.number_ele_esc} - ${data?.description}`,
+      };
+      alertNotification(alert);
+    });
     return () => {
       socket.disconnect();
     };
@@ -81,9 +92,10 @@ export const SocketNotificationProvider = ({ children }: any) => {
     if (ticketsAssign) {
       const ticketCount = ticketsAssign.length;
       setAssignedTicketsCount(ticketCount);
-      if (ticketCount > 0) {
+      if (ticketCount > 0 && ticketCount !== previousTicketCountRef.current) {
         schedulePushNotification(ticketCount);
       }
+      previousTicketCountRef.current = ticketCount;
     }
   }, [ticketsAssign, setAssignedTicketsCount]);
 
@@ -91,10 +103,20 @@ export const SocketNotificationProvider = ({ children }: any) => {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "Reclamo asignado",
-        body: `Tienes ${totalTickets} reclamo${
+        body: `Tenes ${totalTickets} reclamo${
           totalTickets !== 1 ? "s" : ""
         } asignado${totalTickets !== 1 ? "s" : ""}.`,
         data: { totalTickets: totalTickets },
+      },
+      trigger: null,
+    });
+  };
+
+  const alertNotification = async (data: any) => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: `${data?.title}`,
+        body: `${data?.body}`,
       },
       trigger: null,
     });

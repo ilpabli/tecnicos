@@ -68,8 +68,8 @@
       "eas": {
         "projectId": "94ee1bba-71f1-4de8-ac6f-a7738ee3ae5d"
       },
-      "EXPO_PUBLIC_BACKEND_URL": "http://10.116.70.87:8080/api",
-      "EXPO_PUBLIC_WEBSOCKET_URL": "http://10.116.70.87:8080",
+      "EXPO_PUBLIC_BACKEND_URL": "http://10.116.70.78:8080/api",
+      "EXPO_PUBLIC_WEBSOCKET_URL": "http://10.116.70.78:8080",
       "EXPO_PUBLIC_WEBSOCKET_ORIGIN": "http://mobile"
     }
   }

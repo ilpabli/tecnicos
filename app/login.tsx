@@ -1,5 +1,12 @@
 import { View, StyleSheet, Image, Text } from "react-native";
-import { TextInput, Button, Card, Chip, Icon } from "react-native-paper";
+import {
+  TextInput,
+  Button,
+  Card,
+  Chip,
+  Icon,
+  HelperText,
+} from "react-native-paper";
 import * as React from "react";
 import { useSession } from "@/contexts/auth";
 import { useForm, Controller } from "react-hook-form";
@@ -63,9 +70,14 @@ export default function SignIn() {
             name="user"
           />
           {errors.user && (
-            <Text style={styles.errorText}>{errors.user.message}</Text>
+            <HelperText
+              type="error"
+              visible={!!errors.user}
+              style={styles.helperText}
+            >
+              Error: {errors.user?.message}
+            </HelperText>
           )}
-
           <Controller
             control={control}
             rules={{
@@ -85,7 +97,13 @@ export default function SignIn() {
             name="password"
           />
           {errors.password && (
-            <Text style={styles.errorText}>{errors.password.message}</Text>
+            <HelperText
+              type="error"
+              visible={!!errors.password}
+              style={styles.helperText}
+            >
+              Error: {errors.password?.message}
+            </HelperText>
           )}
         </Card.Content>
         <Card.Actions style={styles.cardActions}>
@@ -116,7 +134,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "80%",
-    marginVertical: 5,
+    marginVertical: 3,
     fontSize: 15,
   },
   card: {
@@ -142,5 +160,8 @@ const styles = StyleSheet.create({
   },
   chip: {
     backgroundColor: "red",
+  },
+  helperText: {
+    marginLeft: 0,
   },
 });

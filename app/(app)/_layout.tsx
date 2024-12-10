@@ -5,6 +5,7 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { useTicketStore } from "../../store/ticketStore";
 import { SocketNotificationProvider } from "@/contexts/notification";
 import { LocationProvider } from "@/contexts/location";
+import { Logo } from "@/components/logo";
 
 export default function AppLayout() {
   const { session, isLoading, isAdmin } = useSession();
@@ -25,7 +26,11 @@ export default function AppLayout() {
         <Tabs
           screenOptions={{
             tabBarActiveTintColor: "#e91e63",
-            headerShown: false,
+            headerTitle: () => <Logo />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              height: 100,
+            },
             tabBarHideOnKeyboard: true,
           }}
         >
@@ -65,7 +70,7 @@ export default function AppLayout() {
                   color={color}
                 />
               ),
-              href: true ? "/supervisor" : null,
+              href: isAdmin ? "/supervisor" : null,
             }}
           />
           <Tabs.Screen

@@ -14,7 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 
 const LOCATION_TASK_NAME = "background-location-task";
 const BACKGROUND_FETCH_TASK_NAME = "background-fetch-task";
-const UPDATE_INTERVAL = 5 * 60 * 1000;
+const UPDATE_INTERVAL = 15 * 60 * 1000;
 
 interface LocationContextType {
   currentLocation: Location.LocationObject | null;

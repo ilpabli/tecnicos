@@ -5,11 +5,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyProfile } from "@/utils/axios";
 import LoadingComponent from "@/components/loading";
 import { Avatar, Button, Card, Text } from "react-native-paper";
+import ChangePasswordComponent from "@/components/changepassword";
 
 const LeftContent = (props: any) => <Avatar.Icon {...props} icon="account" />;
 
 export default function Profile() {
   const { user, signOut } = useSession();
+
   const {
     isLoading,
     error,
@@ -18,7 +20,7 @@ export default function Profile() {
   } = useQuery({
     queryKey: ["profile"],
     enabled: !!user,
-    queryFn: () => getMyProfile(user),
+    queryFn: () => getMyProfile(),
     retry: true,
   });
 
@@ -54,6 +56,7 @@ export default function Profile() {
               ? "Supervisor"
               : profile.role}
           </Text>
+          <ChangePasswordComponent />
         </Card.Content>
         <Card.Actions style={styles.cardActions}>
           <Button

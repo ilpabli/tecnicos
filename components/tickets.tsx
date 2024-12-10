@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Pressable } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { Avatar, Button, Card, Text } from "react-native-paper";
 
@@ -17,45 +17,48 @@ const TicketsComponent = ({ tickets }: any) => {
     return "help"; //
   };
 
+  const StyledPressable = Pressable;
+
   return (
     <FlashList
       data={tickets}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }: any) => (
-        <Card style={styles.card}>
-          <Card.Title
-            title={`Cliente ${item?.job_data.job_number} - ${item?.job_data.job_name}`}
-            titleVariant="titleLarge"
-            subtitle={`${item?.job_data.job_address}`}
-            subtitleVariant="titleMedium"
-            left={() => <LeftContent icon={getIconName(item.ele_esc)} />}
-          />
-          <Card.Content style={styles.cardContent}>
-            <Text variant="titleMedium" style={styles.text}>
-              Reclamo número: {item?.ticket_id}
-            </Text>
-            <Text variant="titleLarge" style={styles.text}>
-              {item?.ele_esc} #{item?.number_ele_esc} - {item?.status_ele_esc}
-            </Text>
-            <Text variant="bodyLarge" style={styles.text}>
-              Descripción: {item?.description}
-            </Text>
-            <Text variant="bodyLarge" style={styles.text}>
-              Contacto: {item?.contact}
-            </Text>
-          </Card.Content>
-          <Card.Actions style={styles.cardActions}>
-            <Link
-              href={{
-                pathname: `/tickets/${item?.ticket_id}`,
-              }}
-            >
-              <Button icon="contain" buttonColor="green" mode="contained">
-                Ingresar
-              </Button>
-            </Link>
-          </Card.Actions>
-        </Card>
+        <Link href={`/tickets/${item?.ticket_id}`} asChild>
+          <StyledPressable>
+            <Card style={styles.card}>
+              <Card.Title
+                title={`Cliente ${item?.job_data.job_number} - ${item?.job_data.job_name}`}
+                titleVariant="titleLarge"
+                subtitle={`${item?.job_data.job_address}`}
+                subtitleVariant="titleMedium"
+                left={() => <LeftContent icon={getIconName(item.ele_esc)} />}
+              />
+              <Card.Content style={styles.cardContent}>
+                <Text variant="titleMedium" style={styles.text}>
+                  Reclamo número: {item?.ticket_id}
+                </Text>
+                <Text variant="titleLarge" style={styles.text}>
+                  {item?.ele_esc} #{item?.number_ele_esc} -{" "}
+                  {item?.status_ele_esc}
+                </Text>
+                <Text variant="bodyLarge" style={styles.text}>
+                  Descripción: {item?.description}
+                </Text>
+                <Text variant="bodyLarge" style={styles.text}>
+                  Contacto: {item?.contact}
+                </Text>
+              </Card.Content>
+              <Card.Actions style={styles.cardActions}>
+                <Link href={`/tickets/${item?.ticket_id}`}>
+                  <Button icon="contain" buttonColor="green" mode="contained">
+                    Ingresar
+                  </Button>
+                </Link>
+              </Card.Actions>
+            </Card>
+          </StyledPressable>
+        </Link>
       )}
       estimatedItemSize={200}
     />

@@ -38,9 +38,9 @@ export const workingTicket = async (ticketId: any, data: any) => {
   }
 };
 
-export const getMyProfile = async (user: any) => {
+export const getMyProfile = async () => {
   try {
-    const res = await axiosInstance.get(`/users/${user}`);
+    const res = await axiosInstance.get(`/users/current`);
     return res.data;
   } catch (error) {
     throw error;
@@ -70,6 +70,15 @@ export const assignTicket = async (ticketId: number, usr: string) => {
 export const updateLocation = async (user: any, data: any) => {
   try {
     const res = await axiosInstance.put(`/users/${user}/location`, data);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const changePassword = async (data: any) => {
+  try {
+    const res = await axiosInstance.post(`/users/changepassword`, data);
     return res.data;
   } catch (error) {
     throw error;
